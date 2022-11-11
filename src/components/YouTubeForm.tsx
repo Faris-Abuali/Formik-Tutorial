@@ -1,6 +1,7 @@
 import { useFormik } from 'formik';
 import React from 'react';
 import "../styles/YouTubeForm.css";
+import { validationSchema } from './validation';
 
 type Props = {}
 
@@ -20,6 +21,7 @@ const onSubmit = (values: FormikValues) => {
     console.log(values);
 }
 
+// * Replaced by Yup validationSchema
 const validate = (values: FormikValues) => {
     let errors: Partial<FormikValues> = {};
     const emailRegex: RegExp = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
@@ -42,13 +44,12 @@ const validate = (values: FormikValues) => {
 
 const YouTubeForm = (props: Props) => {
 
-    const { values, handleChange, handleSubmit, handleBlur, errors, touched } = useFormik({
+    const { values, handleChange, handleSubmit, handleBlur, errors, touched, getFieldProps } = useFormik({
         initialValues,
         onSubmit,
-        validate
+        // validate
+        validationSchema
     });
-
-    console.log(touched);
 
     return (
         <div>
@@ -58,11 +59,9 @@ const YouTubeForm = (props: Props) => {
                     <input
                         type='text'
                         id='name'
-                        name='name'
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        // handleBlur is used to set the touched property to true when the input is blurred
-                        value={values.name}
+                        // getFieldProps will return an object with the following properties:
+                        // onBlur, onChange, value, name
+                        {...getFieldProps('name')}
                     />
                     {touched.name && errors.name && <div className="error">{errors.name}</div>}
                 </div>
@@ -72,10 +71,7 @@ const YouTubeForm = (props: Props) => {
                     <input
                         type='email'
                         id='email'
-                        name='email'
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        value={values.email}
+                        {...getFieldProps('email')}
                     />
                     {touched.email && errors.email && <div className="error">{errors.email}</div>}
                 </div>
@@ -85,10 +81,7 @@ const YouTubeForm = (props: Props) => {
                     <input
                         type='text'
                         id='channel'
-                        name='channel'
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        value={values.channel}
+                        {...getFieldProps('channel')}
                     />
                     {touched.channel && errors.channel && <div className="error">{errors.channel}</div>}
                 </div>
