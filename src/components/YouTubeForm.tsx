@@ -1,7 +1,8 @@
 // import { useFormik } from 'formik';
-import { Formik, Form, Field, ErrorMessage } from 'formik';
+import { Formik, Form, Field, ErrorMessage, FieldArray } from 'formik';
 import React from 'react';
 import "../styles/YouTubeForm.css";
+import TextError from './TextError';
 import { validationSchema } from './validation';
 
 type Props = {}
@@ -15,7 +16,15 @@ interface FormikValues {
 const initialValues = {
     name: '',
     email: '',
-    channel: ''
+    channel: '',
+    comments: '',
+    address: '',
+    social: {
+        facebook: '',
+        twitter: ''
+    },
+    phoneNumbers: ['', ''],
+    phNumbers: [''], // We start off by asking for one phone number
 };
 
 const onSubmit = (values: FormikValues) => {
@@ -66,10 +75,14 @@ const YouTubeForm = (props: Props) => {
                             <Field
                                 type='text'
                                 name='name'
+                                id='name'
                             // getFieldProps will return an object with the following properties:
                             // onBlur, onChange, value, name  
                             />
-                            <ErrorMessage name='name' />
+                            <ErrorMessage
+                                name='name'
+                                component={TextError}
+                            />
                             {/* ErrorMessage component conditionally renders only if the field has been visited (touched) and the error exists */}
                         </div>
 
@@ -78,8 +91,11 @@ const YouTubeForm = (props: Props) => {
                             <Field
                                 type='email'
                                 name='email'
+                                id='email'
                             />
-                            <ErrorMessage name='email' />
+                            <ErrorMessage name='email'>
+                                {errorMsg => <div className='error'>{errorMsg}</div>}
+                            </ErrorMessage>
                         </div>
 
                         <div className='form-control'>
@@ -87,8 +103,96 @@ const YouTubeForm = (props: Props) => {
                             <Field
                                 type='text'
                                 name='channel'
+                                id='channel'
+                                placeholder='YouTube channel name'
                             />
                             <ErrorMessage name='channel' />
+                        </div>
+
+                        <div className='form-control'>
+                            <label htmlFor='comments'>Comments</label>
+                            <Field
+                                as='textarea' // to decide what element to render
+                                // `as` and `component` props are similar to `render` prop in React Router
+                                id='comments'
+                                name='comments'
+                            />
+                        </div>
+
+                        <div className='form-control'>
+                            <label htmlFor='address'>Address</label>
+                            <Field name='address'>
+                                {(props: any) => {
+                                    // console.log(props);
+                                    const { field, form, meta } = props;
+                                    console.log(props);
+                                    return (
+                                        <div>
+                                            <input type='text' id='address' {...field} />
+                                            {/* field will take care of name, value, onChange, onBlur,*/}
+                                            {meta.touched && meta.error && <div className="error">{meta.error}</div>}
+                                        </div>
+                                    )
+                                }}
+                            </Field>
+                        </div>
+
+                        <div className='form-control'>
+                            <label htmlFor='facebook'>Facebook Profile</label>
+                            <Field type='text' id='facebook' name='social.facebook' />
+                        </div>
+
+                        <div className='form-control'>
+                            <label htmlFor='twitter'>Twitter Profile</label>
+                            <Field type='text' id='twitter' name='social.twitter' />
+                        </div>
+
+                        <div className='form-control'>
+                            <label htmlFor='primaryPh'>Primary Phone Number</label>
+                            <Field type='text' id='primaryPh' name='phoneNumbers[0]' />
+                        </div>
+
+                        <div className='form-control'>
+                            <label htmlFor='secondaryPh'>Secondary Phone Number</label>
+                            <Field type='text' id='secondaryPh' name='phoneNumbers[1]' />
+                        </div>
+
+                        <div className='form-control'>
+                            <label>List of Phone Numbers</label>
+                            <FieldArray name='phNumbers'>
+                                {(fieldArrayProps) => {
+                                    console.log(fieldArrayProps);
+                                    const { push, remove, form } = fieldArrayProps;
+                                    const { values } = form;
+                                    const { phNumbers } = values;
+
+
+                                    return <section>
+                                        {phNumbers.map((phNumber: string, index: number) => (
+                                            <div
+                                                key={index}
+                                                className="phNumbersSection"
+                                            >
+                                                <Field name={`phNumbers[${index}]`} className="phNumberField" />
+                                                {index > 0 && (
+                                                    <button
+                                                        type='button'
+                                                        onClick={() => remove(index)}
+                                                    >
+                                                        -
+                                                    </button>
+                                                )}
+                                                <button
+                                                    type='button'
+                                                    onClick={() => push('')}
+                                                >
+                                                    +
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </section>
+                                }}
+                            </FieldArray>
                         </div>
 
                         <button
