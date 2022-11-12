@@ -1,4 +1,5 @@
-import { useFormik } from 'formik';
+// import { useFormik } from 'formik';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
 import React from 'react';
 import "../styles/YouTubeForm.css";
 import { validationSchema } from './validation';
@@ -44,59 +45,62 @@ const validate = (values: FormikValues) => {
 
 const YouTubeForm = (props: Props) => {
 
-    const { values, handleChange, handleSubmit, handleBlur, errors, touched, getFieldProps } = useFormik({
-        initialValues,
-        onSubmit,
-        // validate
-        validationSchema
-    });
+    // const { values, handleChange, handleSubmit, handleBlur, errors, touched, getFieldProps } = useFormik({
+    //     initialValues,
+    //     onSubmit,
+    //     // validate
+    //     validationSchema
+    // });
 
     return (
-        <div>
-            <form>
-                <div className='form-control'>
-                    <label htmlFor='name'>Name</label>
-                    <input
-                        type='text'
-                        id='name'
-                        // getFieldProps will return an object with the following properties:
-                        // onBlur, onChange, value, name
-                        {...getFieldProps('name')}
-                    />
-                    {touched.name && errors.name && <div className="error">{errors.name}</div>}
-                </div>
+        <Formik
+            initialValues={initialValues}
+            onSubmit={onSubmit}
+            validationSchema={validationSchema}
+        >
+            {({ handleSubmit }) => {
+                return (
+                    <Form>
+                        <div className='form-control'>
+                            <label htmlFor='name'>Name</label>
+                            <Field
+                                type='text'
+                                name='name'
+                            // getFieldProps will return an object with the following properties:
+                            // onBlur, onChange, value, name  
+                            />
+                            <ErrorMessage name='name' />
+                            {/* ErrorMessage component conditionally renders only if the field has been visited (touched) and the error exists */}
+                        </div>
 
-                <div className='form-control'>
-                    <label htmlFor='email'>Email</label>
-                    <input
-                        type='email'
-                        id='email'
-                        {...getFieldProps('email')}
-                    />
-                    {touched.email && errors.email && <div className="error">{errors.email}</div>}
-                </div>
+                        <div className='form-control'>
+                            <label htmlFor='email'>Email</label>
+                            <Field
+                                type='email'
+                                name='email'
+                            />
+                            <ErrorMessage name='email' />
+                        </div>
 
-                <div className='form-control'>
-                    <label htmlFor='channel'>Channel</label>
-                    <input
-                        type='text'
-                        id='channel'
-                        {...getFieldProps('channel')}
-                    />
-                    {touched.channel && errors.channel && <div className="error">{errors.channel}</div>}
-                </div>
+                        <div className='form-control'>
+                            <label htmlFor='channel'>Channel</label>
+                            <Field
+                                type='text'
+                                name='channel'
+                            />
+                            <ErrorMessage name='channel' />
+                        </div>
 
-                <button
-                    type='submit'
-                    onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-                        e.preventDefault();
-                        handleSubmit()
-                    }}
-                >
-                    Submit
-                </button>
-            </form>
-        </div>
+                        <button
+                            type='button'
+                            onClick={() => handleSubmit()}
+                        >
+                            Submit
+                        </button>
+                    </Form>
+                )
+            }}
+        </Formik>
     )
 }
 
