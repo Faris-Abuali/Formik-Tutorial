@@ -2,7 +2,7 @@
 import { Formik, Form, Field, ErrorMessage, FieldArray, FastField, FormikHelpers } from 'formik';
 import React from 'react';
 import "../styles/YouTubeForm.css";
-import TextError from './TextError';
+import ErrorText from './ErrorText';
 import { validationSchema } from './validation';
 
 type Props = {}
@@ -122,7 +122,7 @@ const YouTubeForm = (props: Props) => {
                             />
                             <ErrorMessage
                                 name='name'
-                                component={TextError}
+                                component={ErrorText}
                             />
                             {/* ErrorMessage component conditionally renders only if the field has been visited (touched) and the error exists */}
                         </div>
@@ -147,7 +147,7 @@ const YouTubeForm = (props: Props) => {
                                 id='channel'
                                 placeholder='YouTube channel name'
                             />
-                            <ErrorMessage name='channel' component={TextError} />
+                            <ErrorMessage name='channel' component={ErrorText} />
                         </div>
 
                         <div className='form-control'>
@@ -159,7 +159,7 @@ const YouTubeForm = (props: Props) => {
                                 name='comments'
                                 validate={validateComments} //#25 - Field Level Validation
                             />
-                            <ErrorMessage name='comments' component={TextError} />
+                            <ErrorMessage name='comments' component={ErrorText} />
                         </div>
 
                         <div className='form-control'>
@@ -261,7 +261,7 @@ const YouTubeForm = (props: Props) => {
                         >
                             validate all
                         </button> */}
-                        <button
+                        {/* <button
                             type="button"
                             onClick={() => {
                                 setTimeout(() => {
@@ -270,7 +270,7 @@ const YouTubeForm = (props: Props) => {
                             }}
                         >
                             Load saved data
-                        </button>
+                        </button> */}
                         <button type='reset'>
                             Reset
                         </button>
