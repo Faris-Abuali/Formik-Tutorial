@@ -1,5 +1,5 @@
 // import { useFormik } from 'formik';
-import { Formik, Form, Field, ErrorMessage, FieldArray } from 'formik';
+import { Formik, Form, Field, ErrorMessage, FieldArray, FastField, FormikHelpers } from 'formik';
 import React from 'react';
 import "../styles/YouTubeForm.css";
 import TextError from './TextError';
@@ -27,8 +27,27 @@ const initialValues = {
     phNumbers: [''], // We start off by asking for one phone number
 };
 
-const onSubmit = (values: FormikValues) => {
+const savedValues = {
+    name: 'Faris',
+    email: 'fabuali@restaurant365.com',
+    channel: 'Faris Channel',
+    comments: 'this is good',
+    address: 'Nablus',
+    social: {
+        facebook: 'fb',
+        twitter: 'tw'
+    },
+    phoneNumbers: ['12', '34'],
+    phNumbers: ['sss'], // We start off by asking for one phone number
+};
+
+const onSubmit = (values: FormikValues, onSubmitProps: FormikHelpers<any>) => {
     console.log(values);
+    setTimeout(() => {
+        onSubmitProps.setSubmitting(false);
+        onSubmitProps.resetForm();
+    }, 1000);
+    // `isSubmitting` will stay true until the promise returned by `onSubmit` is resolved.
 }
 
 // * Replaced by Yup validationSchema
@@ -52,8 +71,17 @@ const validate = (values: FormikValues) => {
     return errors;
 }
 
-const YouTubeForm = (props: Props) => {
+// #25 - Field Level Validation
+const validateComments = (value: string) => {
+    let error;
+    if (!value) {
+        error = 'Required';
+    }
+    return error;
+}
 
+const YouTubeForm = (props: Props) => {
+    const [formValues, setFormValues] = React.useState<any>(null);
     // const { values, handleChange, handleSubmit, handleBlur, errors, touched, getFieldProps } = useFormik({
     //     initialValues,
     //     onSubmit,
@@ -63,11 +91,24 @@ const YouTubeForm = (props: Props) => {
 
     return (
         <Formik
-            initialValues={initialValues}
+            initialValues={formValues || initialValues}
             onSubmit={onSubmit}
             validationSchema={validationSchema}
+            enableReinitialize
+        // validateOnChange={false}
+        // validateOnBlur={false}
+        // validateOnMount
         >
-            {({ handleSubmit }) => {
+            {({
+                handleSubmit,
+                validateField,
+                validateForm,
+                setFieldTouched,
+                setTouched,
+                isValid,
+                dirty,
+                isSubmitting,
+            }) => {
                 return (
                     <Form>
                         <div className='form-control'>
@@ -106,7 +147,7 @@ const YouTubeForm = (props: Props) => {
                                 id='channel'
                                 placeholder='YouTube channel name'
                             />
-                            <ErrorMessage name='channel' />
+                            <ErrorMessage name='channel' component={TextError} />
                         </div>
 
                         <div className='form-control'>
@@ -116,16 +157,18 @@ const YouTubeForm = (props: Props) => {
                                 // `as` and `component` props are similar to `render` prop in React Router
                                 id='comments'
                                 name='comments'
+                                validate={validateComments} //#25 - Field Level Validation
                             />
+                            <ErrorMessage name='comments' component={TextError} />
                         </div>
 
                         <div className='form-control'>
                             <label htmlFor='address'>Address</label>
-                            <Field name='address'>
+                            <FastField name='address'>
                                 {(props: any) => {
-                                    // console.log(props);
+                                    // console.log("Field render");
                                     const { field, form, meta } = props;
-                                    console.log(props);
+                                    // console.log(props);
                                     return (
                                         <div>
                                             <input type='text' id='address' {...field} />
@@ -134,7 +177,7 @@ const YouTubeForm = (props: Props) => {
                                         </div>
                                     )
                                 }}
-                            </Field>
+                            </FastField>
                         </div>
 
                         <div className='form-control'>
@@ -161,11 +204,11 @@ const YouTubeForm = (props: Props) => {
                             <label>List of Phone Numbers</label>
                             <FieldArray name='phNumbers'>
                                 {(fieldArrayProps) => {
-                                    console.log(fieldArrayProps);
+                                    // console.log(fieldArrayProps);
                                     const { push, remove, form } = fieldArrayProps;
                                     const { values } = form;
+                                    // console.log("form errors", form.errors);
                                     const { phNumbers } = values;
-
 
                                     return <section>
                                         {phNumbers.map((phNumber: string, index: number) => (
@@ -195,9 +238,48 @@ const YouTubeForm = (props: Props) => {
                             </FieldArray>
                         </div>
 
+                        {/* <button
+                            type='button'
+                            onClick={() => {
+                                setFieldTouched('comments');
+                                validateField('comments');
+                            }}
+                        >
+                            validate comments
+                        </button>
+                        <button
+                            type='button'
+                            onClick={() => {
+                                setTouched({
+                                    name: true,
+                                    email: true,
+                                    channel: true,
+                                    comments: true,
+                                });
+                                validateForm();
+                            }}
+                        >
+                            validate all
+                        </button> */}
+                        <button
+                            type="button"
+                            onClick={() => {
+                                setTimeout(() => {
+                                    setFormValues(savedValues);
+                                }, 1000);
+                            }}
+                        >
+                            Load saved data
+                        </button>
+                        <button type='reset'>
+                            Reset
+                        </button>
                         <button
                             type='button'
                             onClick={() => handleSubmit()}
+                            // disabled={!(dirty && isValid)}
+                            disabled={!isValid || isSubmitting}
+                        // `isSubmitting` will stay true until the promise returned by `onSubmit` is resolved.
                         >
                             Submit
                         </button>
