@@ -26,7 +26,8 @@ By colocating all of the above in one place, Formik will keep things organized--
     height="300"
   />
 </div>
-
+<br />
+<hr />
 
 
 ##### If you are interested in learning Formik, I highly recommend watching this YouTube Playlist by Codevolution 🍿🎥👇 <br />
