@@ -1,27 +1,26 @@
 import React, { FC } from 'react'
 import { Field, ErrorMessage } from 'formik';
-import "../../../styles/YouTubeForm.css";
+// import "../../../styles/YouTubeForm.css";
 import "./styles/RadioButtons.css";
 import ErrorText from './ErrorText';
 
 type Props = {
     label: string,
     name: string,
+    options: { key: string; value: string }[],
     rest: any
 }
 
-const RadioButtons: FC<any> = (props) => {
+const RadioButtons: FC<Props> = (props) => {
     const { label, name, options, ...rest } = props;
 
     return (
         <div className='form-control'>
             <label>{label}</label>
-            <section
-                className='radioGroup'
-  
-            >
+            <section className='radioGroup'>
                 <Field as="radio" name={name} {...rest}>
                     {
+                        // renderProps design pattern:
                         (formikProps: any) => {
                             const { field, form, meta } = formikProps;
                             console.log("Field", field);
